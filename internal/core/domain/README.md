@@ -1,0 +1,1 @@
+ # GO Hexagonal Architecture Sandbox - Domain

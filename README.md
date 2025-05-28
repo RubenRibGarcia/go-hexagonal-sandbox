@@ -1,1 +1,2 @@
-# go-hexagonal-sandbox
+# Go Hexagonal Architecture Sandbox
+
