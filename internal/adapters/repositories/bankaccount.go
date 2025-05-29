@@ -34,7 +34,7 @@ func (cori BankAccountRepositoryImpl) Get(ctx context.Context, id uuid.UUID) (do
 	if err != nil {
 		return domain.BankAccount{}, err
 	}
-	transactions, err := pgx.CollectRows(rows, pgx.RowToStructByNameLax[domain.Transaction])
+	transactions, err := pgx.CollectRows(rows, pgx.RowToAddrOfStructByNameLax[domain.Transaction])
 	if err != nil {
 		return domain.BankAccount{}, err
 	}
@@ -102,6 +102,9 @@ func (cori BankAccountRepositoryImpl) Update(ctx context.Context, entity domain.
 				transaction.Amount,
 				transaction.Kind,
 			)
+
+			transaction.ID = &id
+			transaction.CreatedAt = &now
 
 			if err != nil {
 				return domain.BankAccount{}, err

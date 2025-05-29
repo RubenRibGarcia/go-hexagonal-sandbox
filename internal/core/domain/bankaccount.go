@@ -16,17 +16,18 @@ const (
 )
 
 type Transaction struct {
-	ID        *uuid.UUID      `db:"id"`
-	CreatedAt *time.Time      `db:"created_at"`
-	Amount    decimal.Decimal `db:"amount"`
-	Kind      TransactionKind `db:"kind"`
+	ID            *uuid.UUID      `db:"id"`
+	CreatedAt     *time.Time      `db:"created_at"`
+	Amount        decimal.Decimal `db:"amount"`
+	Kind          TransactionKind `db:"kind"`
+	BankAccountID uuid.UUID       `db:"bank_account_id" json:"-"`
 }
 
 type BankAccount struct {
 	ID           *uuid.UUID      `db:"id"`
 	CreatedAt    *time.Time      `db:"created_at"`
 	UpdatedAt    *time.Time      `db:"updated_at"`
-	Transactions []Transaction   `db:"-"`
+	Transactions []*Transaction  `db:"-"`
 	Balance      decimal.Decimal `db:"balance"`
 }
 
@@ -35,7 +36,7 @@ func NewBankAccount() BankAccount {
 	return BankAccount{
 		CreatedAt:    &now,
 		UpdatedAt:    &now,
-		Transactions: []Transaction{},
+		Transactions: []*Transaction{},
 		Balance:      decimal.Zero,
 	}
 }
@@ -46,7 +47,7 @@ func (bk *BankAccount) Deposit(amount decimal.Decimal) error {
 	}
 
 	bk.Balance = bk.Balance.Add(amount)
-	bk.Transactions = append(bk.Transactions, Transaction{
+	bk.Transactions = append(bk.Transactions, &Transaction{
 		Amount: amount,
 		Kind:   CREDIT,
 	})
@@ -64,7 +65,7 @@ func (bk *BankAccount) Withdraw(amount decimal.Decimal) error {
 	}
 
 	bk.Balance = bk.Balance.Sub(amount)
-	bk.Transactions = append(bk.Transactions, Transaction{
+	bk.Transactions = append(bk.Transactions, &Transaction{
 		Amount: amount,
 		Kind:   DEBIT,
 	})

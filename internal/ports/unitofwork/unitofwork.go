@@ -2,7 +2,6 @@ package unitofwork
 
 import (
 	"context"
-	"fmt"
 	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/ports/repositories"
 )
 
@@ -24,9 +23,7 @@ func Atomic[R any](ctx context.Context, uowf UnitOfWorkFactory, fw func(uow Unit
 	}
 
 	rvalue, err := fw(uow)
-
-	fmt.Printf("Atomic operation result: %v, error: %v\n", rvalue, err)
-
+	
 	if err == nil {
 		if err = uow.Commit(ctx); err != nil {
 			return nil, err

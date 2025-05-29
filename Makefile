@@ -35,3 +35,10 @@ test: test-arch
 .PHONY: test-arch
 test-arch:
 	@go test ./test/arch
+
+.PHONY: lint
+lint:
+	@golangci-lint run
+
+fix-lint:
+	@golangci-lint run --fix
