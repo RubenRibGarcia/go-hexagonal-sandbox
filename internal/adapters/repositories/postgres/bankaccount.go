@@ -1,4 +1,4 @@
-package repositories
+package postgres
 
 import (
 	"context"
@@ -30,7 +30,7 @@ func (cori BankAccountRepositoryImpl) Get(ctx context.Context, id uuid.UUID) (do
 		return domain.BankAccount{}, err
 	}
 
-	rows, err = cori.tx.Query(ctx, "SELECT * FROM transactions WHERE bank_account_id = $1", id)
+	rows, err = cori.tx.Query(ctx, "SELECT t.id, t.created_at, t.amount, t.kind, t.operation  FROM transactions as t WHERE bank_account_id = $1", id)
 	if err != nil {
 		return domain.BankAccount{}, err
 	}
@@ -95,12 +95,13 @@ func (cori BankAccountRepositoryImpl) Update(ctx context.Context, entity domain.
 
 			ct, err = cori.tx.Exec(
 				ctx,
-				"INSERT INTO transactions (id, created_at, bank_account_id, amount, kind) VALUES ($1, $2, $3, $4, $5)",
+				"INSERT INTO transactions (id, created_at, bank_account_id, amount, kind, operation) VALUES ($1, $2, $3, $4, $5, $6)",
 				id,
 				now,
 				entity.ID,
 				transaction.Amount,
 				transaction.Kind,
+				transaction.Operation,
 			)
 
 			transaction.ID = &id

@@ -1,42 +1,25 @@
-package service
+package bankaccount
 
 import (
 	"context"
 	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/core/domain"
 	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/ports/unitofwork"
 	"github.com/gofrs/uuid"
-	"github.com/shopspring/decimal"
 )
 
-type BankAccountService struct {
+type BankAccountServiceImpl struct {
 	uowf unitofwork.UnitOfWorkFactory
-}
-
-type DepositRequest struct {
-	BankAccountID uuid.UUID
-	Amount        decimal.Decimal
-}
-
-type WithdrawRequest struct {
-	BankAccountID uuid.UUID
-	Amount        decimal.Decimal
-}
-
-type TransferRequest struct {
-	FromBankAccountID uuid.UUID
-	ToBankAccountID   uuid.UUID
-	Amount            decimal.Decimal
 }
 
 func NewBankAccountService(
 	uowf unitofwork.UnitOfWorkFactory,
-) BankAccountService {
-	return BankAccountService{
+) BankAccountServiceImpl {
+	return BankAccountServiceImpl{
 		uowf: uowf,
 	}
 }
 
-func (cos *BankAccountService) CreateBankAccount(ctx context.Context) (domain.BankAccount, error) {
+func (cos BankAccountServiceImpl) CreateBankAccount(ctx context.Context) (domain.BankAccount, error) {
 	bankAccount, err := unitofwork.Atomic(ctx, cos.uowf, func(uow unitofwork.UnitOfWork) (*domain.BankAccount, error) {
 		entity, err := uow.BankAccounts().Create(ctx, domain.NewBankAccount())
 		if err != nil {
@@ -52,7 +35,7 @@ func (cos *BankAccountService) CreateBankAccount(ctx context.Context) (domain.Ba
 	return *bankAccount, nil
 }
 
-func (cos *BankAccountService) GetBankAccount(ctx context.Context, id uuid.UUID) (domain.BankAccount, error) {
+func (cos BankAccountServiceImpl) GetBankAccount(ctx context.Context, id uuid.UUID) (domain.BankAccount, error) {
 	bankAccount, err := unitofwork.Atomic(ctx, cos.uowf, func(uow unitofwork.UnitOfWork) (*domain.BankAccount, error) {
 		entity, err := uow.BankAccounts().Get(ctx, id)
 		if err != nil {
@@ -68,7 +51,7 @@ func (cos *BankAccountService) GetBankAccount(ctx context.Context, id uuid.UUID)
 	return *bankAccount, nil
 }
 
-func (cos *BankAccountService) Deposit(ctx context.Context, request DepositRequest) (domain.BankAccount, error) {
+func (cos BankAccountServiceImpl) Deposit(ctx context.Context, request DepositRequest) (domain.BankAccount, error) {
 	bankAccount, err := unitofwork.Atomic(ctx, cos.uowf, func(uow unitofwork.UnitOfWork) (*domain.BankAccount, error) {
 		entity, err := uow.BankAccounts().Get(ctx, request.BankAccountID)
 		if err != nil {
@@ -93,7 +76,7 @@ func (cos *BankAccountService) Deposit(ctx context.Context, request DepositReque
 	return *bankAccount, nil
 }
 
-func (cos *BankAccountService) Withdraw(ctx context.Context, request WithdrawRequest) (domain.BankAccount, error) {
+func (cos BankAccountServiceImpl) Withdraw(ctx context.Context, request WithdrawRequest) (domain.BankAccount, error) {
 	bankAccount, err := unitofwork.Atomic(ctx, cos.uowf, func(uow unitofwork.UnitOfWork) (*domain.BankAccount, error) {
 		entity, err := uow.BankAccounts().Get(ctx, request.BankAccountID)
 		if err != nil {
@@ -118,7 +101,7 @@ func (cos *BankAccountService) Withdraw(ctx context.Context, request WithdrawReq
 	return *bankAccount, nil
 }
 
-func (cos *BankAccountService) Transfer(ctx context.Context, request TransferRequest) (domain.BankAccount, error) {
+func (cos BankAccountServiceImpl) Transfer(ctx context.Context, request TransferRequest) (domain.BankAccount, error) {
 	account, err := unitofwork.Atomic(ctx, cos.uowf, func(uow unitofwork.UnitOfWork) (*domain.BankAccount, error) {
 		fromAccount, err := uow.BankAccounts().Get(ctx, request.FromBankAccountID)
 		if err != nil {
@@ -130,11 +113,9 @@ func (cos *BankAccountService) Transfer(ctx context.Context, request TransferReq
 			return nil, err
 		}
 
-		if err = fromAccount.Withdraw(request.Amount); err != nil {
-			return nil, err
-		}
+		err = fromAccount.Transfer(&toAccount, request.Amount)
 
-		if err = toAccount.Deposit(request.Amount); err != nil {
+		if err != nil {
 			return nil, err
 		}
 

@@ -1,4 +1,4 @@
-package postgres
+package db
 
 type DatabaseConfig struct {
 	Host     string `envconfig:"GHS_DB_HOST" default:"localhost"`

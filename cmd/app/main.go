@@ -4,17 +4,19 @@ import (
 	"context"
 	"fmt"
 	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/adapters/api/rest"
-	v1 "github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/adapters/api/rest/v1"
-	postgres "github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/adapters/unitofwork"
-	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/core/service"
+	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/adapters/api/rest/v1/bankaccounts"
+	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/adapters/db"
+	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/adapters/unitofwork/postgres"
+	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/core/services/bankaccount"
 	"github.com/kelseyhightower/envconfig"
+	"log"
 	"net/http"
 )
 
 func main() {
 	ctx := context.Background()
 
-	var databaseConfig postgres.DatabaseConfig
+	var databaseConfig db.DatabaseConfig
 	err := envconfig.Process("", &databaseConfig)
 	if err != nil {
 		panic(err)
@@ -28,15 +30,12 @@ func main() {
 		panic(err)
 	}
 
-	bankAccountService := service.NewBankAccountService(unitOfWorkFactory)
+	bankAccountService := bankaccount.NewBankAccountService(unitOfWorkFactory)
 
-	handlers := v1.NewBankAccountHandlers(bankAccountService)
+	bkHandlers := bankaccounts.NewBankAccountHandlers(bankAccountService)
 
-	router := rest.NewAPI(handlers)
+	router := rest.NewAPI(bkHandlers)
 
-	fmt.Println("Starting server 127.0.0.1:8888")
-	err = http.ListenAndServe("127.0.0.1:8888", router)
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println("Starting server at :8888")
+	log.Fatal(http.ListenAndServe(":8888", router))
 }

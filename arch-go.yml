@@ -1,0 +1,36 @@
+version: 1
+threshold:
+  compliance: 100
+  coverage: 100
+dependenciesRules:
+  - package: "**.internal/core/domain.**"
+    shouldNotDependsOn:
+      internal:
+        - "**.internal/core/services.**"
+        - "**.internal/ports.**"
+        - "**.internal/adapters.**"
+  - package: "**.internal/core/services.**"
+    shouldOnlyDependsOn:
+      internal:
+        - "**.internal/core/domain.**"
+        - "**.internal/ports.**"
+  - package: "**.internal/ports.**"
+    shouldOnlyDependsOn:
+      internal:
+        - "**.internal/core/domain.**"
+        - "**.internal/core/services.**"
+        - "**.internal/ports.**"
+  - package: "**.internal/adapters.**"
+    shouldOnlyDependsOn:
+      internal:
+        - "**.internal/core/domain.**"
+        - "**.internal/core/services.**"
+        - "**.internal/ports.**"
+        - "**.internal/adapters.**"
+  - package: "cmd.**"
+    shouldOnlyDependsOn:
+      internal:
+        - "**.internal/core/domain.**"
+        - "**.internal/core/services.**"
+        - "**.internal/ports.**"
+        - "**.internal/adapters.**"

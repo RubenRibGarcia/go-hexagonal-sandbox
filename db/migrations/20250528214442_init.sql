@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS transactions (
     created_at TIMESTAMP NOT NULL,
     bank_account_id UUID NOT NULL REFERENCES bank_accounts(id),
     amount DECIMAL(10, 2) NOT NULL,
-    kind VARCHAR(10) NOT NULL CHECK (kind IN ('credit', 'debit'))
+    kind VARCHAR(10) NOT NULL CHECK (kind IN ('credit', 'debit')),
+    operation VARCHAR(10) NOT NULL
 );
 -- +goose StatementEnd
 

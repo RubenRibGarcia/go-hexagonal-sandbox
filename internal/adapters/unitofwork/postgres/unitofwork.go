@@ -3,9 +3,10 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/adapters/db"
+	adapterrepo "github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/adapters/repositories/postgres"
 	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/ports/unitofwork"
 
-	adapterrepo "github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/adapters/repositories"
 	portrepo "github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/ports/repositories"
 	"github.com/jackc/pgx/v5"
 )
@@ -19,7 +20,7 @@ type PostgresUnitOfWork struct {
 	clientOrdersRepository adapterrepo.BankAccountRepositoryImpl
 }
 
-func NewPostgresUnitOfWorkFactory(ctx context.Context, databaseConfig DatabaseConfig) (unitofwork.UnitOfWorkFactory, error) {
+func NewPostgresUnitOfWorkFactory(ctx context.Context, databaseConfig db.DatabaseConfig) (unitofwork.UnitOfWorkFactory, error) {
 	connectionString := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		databaseConfig.Username,

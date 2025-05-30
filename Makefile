@@ -13,9 +13,6 @@ local-psql:
 
 .PHONY: create-schema-migration
 create-schema-migration:
-	ifndef MIGRATION
-		$(error MIGRATION variable is not set. Use: make create-schema-migration MIGRATION=<migration_name>)
-	endif
 	@goose -dir db/migrations create $(MIGRATION) sql
 
 .PHONY: run-schema-migration
@@ -34,7 +31,8 @@ test: test-arch
 
 .PHONY: test-arch
 test-arch:
-	@go test ./test/arch
+	make -f tools/Makefile install-arch-go
+	@arch-go -v
 
 .PHONY: lint
 lint:

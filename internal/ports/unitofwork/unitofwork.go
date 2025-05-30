@@ -23,14 +23,14 @@ func Atomic[R any](ctx context.Context, uowf UnitOfWorkFactory, fw func(uow Unit
 	}
 
 	rvalue, err := fw(uow)
-	
+
 	if err == nil {
-		if err = uow.Commit(ctx); err != nil {
-			return nil, err
+		if commitErr := uow.Commit(ctx); commitErr != nil {
+			return nil, commitErr
 		}
 	} else {
-		if err = uow.Rollback(ctx); err != nil {
-			return nil, err
+		if rollbackErr := uow.Rollback(ctx); rollbackErr != nil {
+			return nil, rollbackErr
 		}
 	}
 

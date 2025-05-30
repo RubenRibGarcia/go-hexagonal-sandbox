@@ -15,12 +15,20 @@ const (
 	DEBIT  TransactionKind = "debit"
 )
 
+type TransactionOperation string
+
+const (
+	DEPOSIT    TransactionOperation = "deposit"
+	WITHDRAWAL TransactionOperation = "withdrawal"
+	TRANSFER   TransactionOperation = "transfer"
+)
+
 type Transaction struct {
-	ID            *uuid.UUID      `db:"id"`
-	CreatedAt     *time.Time      `db:"created_at"`
-	Amount        decimal.Decimal `db:"amount"`
-	Kind          TransactionKind `db:"kind"`
-	BankAccountID uuid.UUID       `db:"bank_account_id" json:"-"`
+	ID        *uuid.UUID           `db:"id"`
+	CreatedAt *time.Time           `db:"created_at"`
+	Amount    decimal.Decimal      `db:"amount"`
+	Kind      TransactionKind      `db:"kind"`
+	Operation TransactionOperation `db:"operation"`
 }
 
 type BankAccount struct {
@@ -48,8 +56,9 @@ func (bk *BankAccount) Deposit(amount decimal.Decimal) error {
 
 	bk.Balance = bk.Balance.Add(amount)
 	bk.Transactions = append(bk.Transactions, &Transaction{
-		Amount: amount,
-		Kind:   CREDIT,
+		Amount:    amount,
+		Kind:      CREDIT,
+		Operation: DEPOSIT,
 	})
 
 	return nil
@@ -66,8 +75,39 @@ func (bk *BankAccount) Withdraw(amount decimal.Decimal) error {
 
 	bk.Balance = bk.Balance.Sub(amount)
 	bk.Transactions = append(bk.Transactions, &Transaction{
-		Amount: amount,
-		Kind:   DEBIT,
+		Amount:    amount,
+		Kind:      DEBIT,
+		Operation: WITHDRAWAL,
+	})
+
+	return nil
+}
+
+func (bk *BankAccount) Transfer(to *BankAccount, amount decimal.Decimal) error {
+	if amount.LessThanOrEqual(decimal.Zero) {
+		return errors.New("transfer amount must be greater than zero")
+	}
+
+	if bk.Balance.LessThan(amount) {
+		return errors.New("insufficient funds for transfer")
+	}
+
+	if to == nil {
+		return errors.New("transfer target account cannot be nil")
+	}
+
+	bk.Balance = bk.Balance.Sub(amount)
+	to.Balance = to.Balance.Add(amount)
+
+	bk.Transactions = append(bk.Transactions, &Transaction{
+		Amount:    amount,
+		Kind:      DEBIT,
+		Operation: TRANSFER,
+	})
+	to.Transactions = append(to.Transactions, &Transaction{
+		Amount:    amount,
+		Kind:      CREDIT,
+		Operation: TRANSFER,
 	})
 
 	return nil

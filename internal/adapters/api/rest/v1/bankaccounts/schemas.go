@@ -1,4 +1,4 @@
-package v1
+package bankaccounts
 
 import "github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/core/domain"
 
