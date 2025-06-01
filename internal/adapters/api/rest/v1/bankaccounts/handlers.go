@@ -2,15 +2,12 @@ package bankaccounts
 
 import (
 	"context"
+
 	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/core/domain"
 	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/core/services/bankaccount"
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/gofrs/uuid"
 	"github.com/shopspring/decimal"
-)
-
-const (
-	v1_prefix = "/api/v1"
 )
 
 type BankAccountService interface {
@@ -31,16 +28,27 @@ func NewBankAccountHandlers(bankAccountService BankAccountService) *BankAccountH
 	}
 }
 
-func (h *BankAccountHandlers) Register(api *huma.API) {
-	huma.Post(*api, buildPath("/bank-accounts"), h.postBankAccount)
-	huma.Get(*api, buildPath("/bank-accounts/{id}"), h.getBankAccountByID)
-	huma.Post(*api, buildPath("/bank-accounts/{id}/deposit"), h.postBankAccountDeposit)
-	huma.Post(*api, buildPath("/bank-accounts/{id}/withdraw"), h.postBankAccountWithdraw)
-	huma.Post(*api, buildPath("/bank-accounts/{id}/transfer"), h.postBankAccountTransfer)
-}
-
-func buildPath(path string) string {
-	return v1_prefix + path
+func (h *BankAccountHandlers) MountOn(group *huma.Group) {
+	huma.Post(group, "/bank-accounts", h.postBankAccount, func(o *huma.Operation) {
+		o.Tags = append(o.Tags, "Bank Accounts")
+		o.Summary = "Create new Bank Account"
+	})
+	huma.Get(group, "/bank-accounts/{id}", h.getBankAccountByID, func(o *huma.Operation) {
+		o.Tags = append(o.Tags, "Bank Accounts")
+		o.Summary = "Get Bank Account By ID"
+	})
+	huma.Post(group, "/bank-accounts/{id}/deposit", h.postBankAccountDeposit, func(o *huma.Operation) {
+		o.Tags = append(o.Tags, "Bank Accounts")
+		o.Summary = "Deposit money into Bank Account"
+	})
+	huma.Post(group, "/bank-accounts/{id}/withdraw", h.postBankAccountWithdraw, func(o *huma.Operation) {
+		o.Tags = append(o.Tags, "Bank Accounts")
+		o.Summary = "Withdraw money from Bank Account"
+	})
+	huma.Post(group, "/bank-accounts/{id}/transfer", h.postBankAccountTransfer, func(o *huma.Operation) {
+		o.Tags = append(o.Tags, "Bank Accounts")
+		o.Summary = "Transfer money to another Bank Account"
+	})
 }
 
 func (h *BankAccountHandlers) postBankAccount(ctx context.Context, params *struct{}) (*PostBankAccountResponse, error) {
