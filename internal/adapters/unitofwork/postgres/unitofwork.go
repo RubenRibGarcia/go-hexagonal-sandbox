@@ -3,8 +3,11 @@ package postgres
 import (
 	"context"
 	"fmt"
+
 	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/adapters/db"
-	adapterrepo "github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/adapters/repositories/postgres"
+	postgreseventbus "github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/adapters/eventbus/postgres"
+	postgresrepo "github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/adapters/repositories/postgres"
+	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/ports/eventbus"
 	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/ports/unitofwork"
 
 	portrepo "github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/ports/repositories"
@@ -16,8 +19,9 @@ type PostgresUnitOfWorkFactory struct {
 }
 
 type PostgresUnitOfWork struct {
-	tx                     pgx.Tx
-	clientOrdersRepository adapterrepo.BankAccountRepositoryImpl
+	tx                          pgx.Tx
+	bankAccountRepository       postgresrepo.BankAccountRepositoryImpl
+	transactionalEventPublisher postgreseventbus.TransactionalEventPublisher
 }
 
 func NewPostgresUnitOfWorkFactory(ctx context.Context, databaseConfig db.DatabaseConfig) (unitofwork.UnitOfWorkFactory, error) {
@@ -48,15 +52,18 @@ func (puowf *PostgresUnitOfWorkFactory) NewUnitOfWork(ctx context.Context) (unit
 	}
 
 	return &PostgresUnitOfWork{
-		tx:                     tx,
-		clientOrdersRepository: adapterrepo.NewBankAccountRepository(tx),
+		tx:                          tx,
+		bankAccountRepository:       postgresrepo.NewBankAccountRepository(tx),
+		transactionalEventPublisher: postgreseventbus.NewTransactionalEventPublisher(tx),
 	}, nil
 }
 
 func (puow *PostgresUnitOfWork) BankAccounts() portrepo.BankAccountRepository {
-	return adapterrepo.NewBankAccountRepository(
-		puow.tx,
-	)
+	return puow.bankAccountRepository
+}
+
+func (puow *PostgresUnitOfWork) EventPublisher() eventbus.Publisher {
+	return puow.transactionalEventPublisher
 }
 
 func (puow *PostgresUnitOfWork) Commit(ctx context.Context) error {

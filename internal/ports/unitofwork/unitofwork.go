@@ -2,6 +2,8 @@ package unitofwork
 
 import (
 	"context"
+
+	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/ports/eventbus"
 	"github.com/RubenRibGarcia/go-hexagonal-sandbox/internal/ports/repositories"
 )
 
@@ -11,6 +13,7 @@ type UnitOfWorkFactory interface {
 
 type UnitOfWork interface {
 	BankAccounts() repositories.BankAccountRepository
+	EventPublisher() eventbus.Publisher
 	Commit(ctx context.Context) error
 	Rollback(ctx context.Context) error
 }
