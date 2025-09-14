@@ -1,4 +1,8 @@
 
+.PHONY: run
+run:
+	@go run cmd/app/main.go
+
 .PHONY: run-environment
 run-environment:
 	@docker compose -f deployments/dev/docker-compose.yml up -d
@@ -33,6 +37,22 @@ test: test-arch
 test-arch:
 	make -f tools/Makefile install-arch-go
 	@arch-go -v
+
+.PHONY: export-openapi
+export-openapi:
+	@go run cmd/app/main.go openapi > api/openapi.yaml
+
+.PHONE: generate-sdk
+generate-go-sdk:
+	@docker run \
+	--rm \
+	--name openapi-generator \
+	-v $(PWD):/local docker.io/openapitools/openapi-generator-cli:v7.15.0 generate \
+	-i /local/api/openapi.yaml \
+    -g go \
+    -o /local/pkg/sdk/go \
+    --additional-properties=disallowAdditionalPropertiesIfNotPresent=false,enumClassPrefix=true,generateInterfaces=true,packageName=gosdk,packageVersion=0.0.1,isGoSubmodule=true
+
 
 .PHONY: lint
 lint:

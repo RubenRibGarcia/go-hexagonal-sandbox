@@ -1,0 +1,480 @@
+components:
+  schemas:
+    ErrorDetail:
+      additionalProperties: false
+      properties:
+        location:
+          description: Where the error occurred, e.g. 'body.items[3].tags' or 'path.thing-id'
+          type: string
+        message:
+          description: Error message text
+          type: string
+        value:
+          description: The value at the given location
+      type: object
+    ErrorModel:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/ErrorModel.json
+          format: uri
+          readOnly: true
+          type: string
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          examples:
+            - Property foo is required but is missing.
+          type: string
+        errors:
+          description: Optional list of individual error details
+          items:
+            $ref: "#/components/schemas/ErrorDetail"
+          type:
+            - array
+            - "null"
+        instance:
+          description: A URI reference that identifies the specific occurrence of the problem.
+          examples:
+            - https://example.com/error-log/abc123
+          format: uri
+          type: string
+        status:
+          description: HTTP status code
+          examples:
+            - 400
+          format: int64
+          type: integer
+        title:
+          description: A short, human-readable summary of the problem type. This value should not change between occurrences of the error.
+          examples:
+            - Bad Request
+          type: string
+        type:
+          default: about:blank
+          description: A URI reference to human-readable documentation for the error.
+          examples:
+            - https://example.com/errors/example
+          format: uri
+          type: string
+      type: object
+    GetBankAccountByIDResponseBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/GetBankAccountByIDResponseBody.json
+          format: uri
+          readOnly: true
+          type: string
+        Balance:
+          type: string
+        CreatedAt:
+          format: date-time
+          type:
+            - string
+            - "null"
+        ID:
+          type: string
+        Transactions:
+          items:
+            $ref: "#/components/schemas/Transaction"
+          type:
+            - array
+            - "null"
+        UpdatedAt:
+          format: date-time
+          type:
+            - string
+            - "null"
+      required:
+        - ID
+        - CreatedAt
+        - UpdatedAt
+        - Transactions
+        - Balance
+      type: object
+    PostBankAccountDepositRequestBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/PostBankAccountDepositRequestBody.json
+          format: uri
+          readOnly: true
+          type: string
+        amount:
+          examples:
+            - "100.00"
+          type: string
+      required:
+        - amount
+      type: object
+    PostBankAccountDepositResponseBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/PostBankAccountDepositResponseBody.json
+          format: uri
+          readOnly: true
+          type: string
+        Balance:
+          type: string
+        CreatedAt:
+          format: date-time
+          type:
+            - string
+            - "null"
+        ID:
+          type: string
+        Transactions:
+          items:
+            $ref: "#/components/schemas/Transaction"
+          type:
+            - array
+            - "null"
+        UpdatedAt:
+          format: date-time
+          type:
+            - string
+            - "null"
+      required:
+        - ID
+        - CreatedAt
+        - UpdatedAt
+        - Transactions
+        - Balance
+      type: object
+    PostBankAccountResponseBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/PostBankAccountResponseBody.json
+          format: uri
+          readOnly: true
+          type: string
+        Balance:
+          type: string
+        CreatedAt:
+          format: date-time
+          type:
+            - string
+            - "null"
+        ID:
+          type: string
+        Transactions:
+          items:
+            $ref: "#/components/schemas/Transaction"
+          type:
+            - array
+            - "null"
+        UpdatedAt:
+          format: date-time
+          type:
+            - string
+            - "null"
+      required:
+        - ID
+        - CreatedAt
+        - UpdatedAt
+        - Transactions
+        - Balance
+      type: object
+    PostBankAccountTransferRequestBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/PostBankAccountTransferRequestBody.json
+          format: uri
+          readOnly: true
+          type: string
+        amount:
+          examples:
+            - "100.00"
+          type: string
+        to:
+          examples:
+            - 123e4567-e89b-12d3-a456-426614174002
+          type: string
+      required:
+        - to
+        - amount
+      type: object
+    PostBankAccountTransferResponseBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/PostBankAccountTransferResponseBody.json
+          format: uri
+          readOnly: true
+          type: string
+        Balance:
+          type: string
+        CreatedAt:
+          format: date-time
+          type:
+            - string
+            - "null"
+        ID:
+          type: string
+        Transactions:
+          items:
+            $ref: "#/components/schemas/Transaction"
+          type:
+            - array
+            - "null"
+        UpdatedAt:
+          format: date-time
+          type:
+            - string
+            - "null"
+      required:
+        - ID
+        - CreatedAt
+        - UpdatedAt
+        - Transactions
+        - Balance
+      type: object
+    PostBankAccountWithdrawRequestBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/PostBankAccountWithdrawRequestBody.json
+          format: uri
+          readOnly: true
+          type: string
+        amount:
+          examples:
+            - "100.00"
+          type: string
+      required:
+        - amount
+      type: object
+    PostBankAccountWithdrawResponseBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - https://example.com/schemas/PostBankAccountWithdrawResponseBody.json
+          format: uri
+          readOnly: true
+          type: string
+        Balance:
+          type: string
+        CreatedAt:
+          format: date-time
+          type:
+            - string
+            - "null"
+        ID:
+          type: string
+        Transactions:
+          items:
+            $ref: "#/components/schemas/Transaction"
+          type:
+            - array
+            - "null"
+        UpdatedAt:
+          format: date-time
+          type:
+            - string
+            - "null"
+      required:
+        - ID
+        - CreatedAt
+        - UpdatedAt
+        - Transactions
+        - Balance
+      type: object
+    Transaction:
+      additionalProperties: false
+      properties:
+        Amount:
+          type: string
+        CreatedAt:
+          format: date-time
+          type:
+            - string
+            - "null"
+        ID:
+          type: string
+        Kind:
+          type: string
+        Operation:
+          type: string
+      required:
+        - ID
+        - CreatedAt
+        - Amount
+        - Kind
+        - Operation
+      type: object
+info:
+  title: Go Hexagonal Sandbox API
+  version: v0.0.1
+openapi: 3.1.0
+paths:
+  /api/v1/bank-accounts:
+    post:
+      operationId: post-api-v1-bank-accounts
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostBankAccountResponseBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Create new Bank Account
+      tags:
+        - Bank Accounts
+  /api/v1/bank-accounts/{id}:
+    get:
+      operationId: get-api-v1-bank-accounts-by-id
+      parameters:
+        - example: 123e4567-e89b-12d3-a456-426614174000
+          in: path
+          name: id
+          required: true
+          schema:
+            examples:
+              - 123e4567-e89b-12d3-a456-426614174000
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetBankAccountByIDResponseBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get Bank Account By ID
+      tags:
+        - Bank Accounts
+  /api/v1/bank-accounts/{id}/deposit:
+    post:
+      operationId: post-api-v1-bank-accounts-by-id-deposit
+      parameters:
+        - example: 123e4567-e89b-12d3-a456-426614174000
+          in: path
+          name: id
+          required: true
+          schema:
+            examples:
+              - 123e4567-e89b-12d3-a456-426614174000
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostBankAccountDepositRequestBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostBankAccountDepositResponseBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Deposit money into Bank Account
+      tags:
+        - Bank Accounts
+  /api/v1/bank-accounts/{id}/transfer:
+    post:
+      operationId: post-api-v1-bank-accounts-by-id-transfer
+      parameters:
+        - example: 123e4567-e89b-12d3-a456-426614174000
+          in: path
+          name: id
+          required: true
+          schema:
+            examples:
+              - 123e4567-e89b-12d3-a456-426614174000
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostBankAccountTransferRequestBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostBankAccountTransferResponseBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Transfer money to another Bank Account
+      tags:
+        - Bank Accounts
+  /api/v1/bank-accounts/{id}/withdraw:
+    post:
+      operationId: post-api-v1-bank-accounts-by-id-withdraw
+      parameters:
+        - example: 123e4567-e89b-12d3-a456-426614174000
+          in: path
+          name: id
+          required: true
+          schema:
+            examples:
+              - 123e4567-e89b-12d3-a456-426614174000
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostBankAccountWithdrawRequestBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostBankAccountWithdrawResponseBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Withdraw money from Bank Account
+      tags:
+        - Bank Accounts
+

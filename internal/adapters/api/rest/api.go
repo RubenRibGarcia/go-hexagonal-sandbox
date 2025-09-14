@@ -13,7 +13,7 @@ type HandlersRegister interface {
 
 type RestAPI struct {
 	Router   *http.ServeMux
-	api      huma.API
+	API      huma.API
 	apiGroup *huma.Group
 }
 
@@ -24,7 +24,7 @@ func NewAPI() RestAPI {
 
 	return RestAPI{
 		Router:   router,
-		api:      api,
+		API:      api,
 		apiGroup: apiGroup,
 	}
 }
